@@ -40,7 +40,7 @@
   "post-processors": [
     {
       "type": "compress",
-      "output": "nixos-16.09-x86_64-{{.BuildName}}.tar.gz"
+      "output": "nixos-16.03-x86_64-{{.BuildName}}.tar.gz"
     }
   ],
   "variables": {
