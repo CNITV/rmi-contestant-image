@@ -1,10 +1,5 @@
-NixOS Virtual Machine Builder
+NixOS Virtual Machine Builder for RMI Contestant Image
 =============================
-
-This project builds a virtual machine with my personal configuration of [NixOS](http://nixos.org) installed.
-
-This is a fork of oxdi's [nixos](http://github.com/oxdi/nixos) project, which builds a NixOS Vagrant box.
-
 
 Building the images
 -------------------

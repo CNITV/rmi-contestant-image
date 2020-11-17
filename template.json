@@ -1,52 +1,82 @@
 {
   "builders": [
     {
-      "type": "virtualbox-iso",
-      "boot_wait": "30s",
       "boot_command": [
-        "stop sshd<enter>",
-        "mkfs.btrfs -L nixos /dev/sda<enter><wait5>",
-        "mount -o discard,compress=lzo LABEL=nixos /mnt<enter><wait>",
-        "nixos-generate-config --root /mnt<enter><wait>",
-        "curl http://{{ .HTTPIP }}:{{ .HTTPPort }}/configuration.nix > /mnt/etc/nixos/configuration.nix<enter><wait>",
-        "nixos-install && reboot<enter>"
+        "sudo su<enter><wait>",
+        "fdisk -l /dev/sda<enter>",
+        "fdisk /dev/sda<enter>",
+
+        "o<enter>",
+        "n<enter>p<enter>1<enter><enter>+300M<enter>t<enter>0c<enter>",
+        "n<enter>p<enter>2<enter><enter><enter>",
+        "p<enter>w<enter>",
+        "passwd nixos<enter><wait>nixos<enter><wait>nixos<enter><wait>",
+        "exit<enter>"
       ],
+      "boot_wait": "40s",
       "guest_additions_mode": "disable",
       "guest_os_type": "Linux_64",
       "http_directory": "nixos",
-      "iso_checksum": "{{user `iso_checksum`}}",
-      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+      "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
       "iso_url": "{{user `iso_url`}}",
       "shutdown_command": "echo 'packer' | sudo -S -- shutdown -h now",
-      "ssh_username": "kiba",
-      "ssh_password": "packer",
-      "ssh_wait_timeout": "20m",
-      "virtualbox_version_file": ".vbox_version",
+      "ssh_timeout": "20m",
+      "ssh_username": "nixos",
+      "ssh_password": "nixos",
+      "type": "virtualbox-iso",
       "vboxmanage": [
-        ["modifyvm", "{{.Name}}", "--memory", "2048"],
-        ["modifyvm", "{{.Name}}", "--cpus", "2"],
-        ["modifyvm", "{{.Name}}", "--accelerate3d", "on"],
-        ["modifyvm", "{{.Name}}", "--vram", "64"]
-      ]
-    }
-  ],
-  "provisioners": [
-    {
-      "type": "shell",
-      "execute_command": "echo 'packer' | sudo -S -- sh -c '{{.Path}}'",
-      "script": "scripts/postinstall.sh"
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "4096"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "2"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--accelerate3d",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--vram",
+          "64"
+        ]
+      ],
+      "virtualbox_version_file": ".vbox_version"
     }
   ],
   "post-processors": [
     {
-      "type": "compress",
-      "output": "nixos-16.03-x86_64-{{.BuildName}}.tar.gz"
+      "output": "rmi-image-nixos-20.09-x86_64-{{.BuildName}}.tar.gz",
+      "type": "compress"
+    }
+  ],
+  "provisioners": [
+    {
+      "execute_command": "sudo sh -c '{{ .Vars }} {{.Path}}'",
+      "script": "scripts/install.sh",
+      "type": "shell",
+      "environment_vars": [
+        "ADMIN_USERNAME={{user `admin_username`}}",
+        "ADMIN_PASSWORD={{user `admin_password`}}"
+      ]
     }
   ],
   "variables": {
-    "iso_url": "http://releases.nixos.org/nixos/16.03/nixos-16.03.1073.73e28bc/nixos-minimal-16.03.1073.73e28bc-x86_64-linux.iso",
-    "iso_checksum": "d7a2843f6f96abc9cf6f616b9f6a02d84869855afc1ca5653887e904776e57d8",
-    "iso_checksum_type": "sha256"
+    "iso_checksum": "193ade43a6a7fd901f6b4271ce57e9aef5667078681d1ae9b617942a1dbbc8eb",
+    "iso_checksum_type": "sha256",
+    "iso_url": "https://channels.nixos.org/nixos-20.09/latest-nixos-minimal-x86_64-linux.iso",
+
+    "admin_username": "admin",
+    "admin_password": "admin"
   }
 }
 
