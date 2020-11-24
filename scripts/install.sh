@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/usr/bin/env nix-shell
+#! nix-shell -i bash -p mkpasswd
 
 log() {
 	echo "RMI PACKER: $@"
@@ -25,8 +26,12 @@ log "Generating config"
 nixos-generate-config --root /mnt
 curl $PACKER_HTTP_ADDR/configuration.nix > /mnt/etc/nixos/configuration.nix
 curl $PACKER_HTTP_ADDR/boot.png > /mnt/etc/nixos/boot.png
-sed -i 's/%adminUsername%/'"$ADMIN_USERNAME"'/g' /mnt/etc/nixos/configuration.nix
-sed -i 's/%adminPassword%/'"$ADMIN_PASSWORD"'/g' /mnt/etc/nixos/configuration.nix
+
+# hash password
+ADMIN_PASSWORD="$(echo "$ADMIN_PASSWORD" | mkpasswd -s -m sha-512)"
+
+sed -i 's:%adminUsername%:'"$ADMIN_USERNAME"':g' /mnt/etc/nixos/configuration.nix
+sed -i 's:%adminPassword%:'"$ADMIN_PASSWORD"':g' /mnt/etc/nixos/configuration.nix
 
 log "Nix install"
 nixos-install

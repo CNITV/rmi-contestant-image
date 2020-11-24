@@ -27,14 +27,14 @@ in {
 
   # Turn off mutable users so `nixos-install` does not prompt to set a password
   users.mutableUsers = true;
-  users.users.root.initialPassword = "%adminPassword%";
+  users.users.root.initialHashedPassword = "%adminPassword%";
 
   # Create my personal user
   # The password should be changed later
   users.extraUsers."%adminUsername%" = {
     description = "Overlord";
     isNormalUser = true;
-    initialPassword = "%adminPassword%";
+    initialHashedPassword = "%adminPassword%";
     extraGroups = [
       "wheel"
     ];
