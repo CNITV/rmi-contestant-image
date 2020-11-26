@@ -8,11 +8,13 @@
 
         "o<enter>",
         "n<enter>p<enter>1<enter><enter>+300M<enter>t<enter>0c<enter>",
-        "n<enter>p<enter>2<enter><enter><enter>",
+        "n<enter>p<enter>2<enter><enter>+8G<enter>t<enter>2<enter>82<enter>",
+        "n<enter>p<enter>3<enter><enter><enter>",
         "p<enter>w<enter>",
         "passwd nixos<enter><wait>nixos<enter><wait>nixos<enter><wait>",
         "exit<enter>"
       ],
+      "disk_size": 50000,
       "boot_wait": "40s",
       "guest_additions_mode": "disable",
       "guest_os_type": "Linux_64",
@@ -46,6 +48,12 @@
         [
           "modifyvm",
           "{{.Name}}",
+          "--graphicscontroller",
+          "vmsvga"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
           "--vram",
           "64"
         ]
@@ -55,11 +63,16 @@
   ],
   "post-processors": [
     {
-      "output": "rmi-image-nixos-20.09-x86_64-{{.BuildName}}.tar.gz",
+      "output": "rmi-image-nixos-20.09-x86_64-{{.BuildName}}.zip",
       "type": "compress"
     }
   ],
   "provisioners": [
+    {
+      "type": "file",
+      "source": "nixos/default.conf",
+      "destination": "~/default.conf"
+    },
     {
       "execute_command": "sudo sh -c '{{ .Vars }} {{.Path}}'",
       "script": "scripts/install.sh",

@@ -7,3 +7,4 @@
 /vendor
 /packer_cache
 *.tar.gz
+/outputs

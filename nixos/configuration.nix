@@ -22,17 +22,14 @@ in {
 
   services.zfs.autoSnapshot = {
     enable = true;
-    frequent = 20;
+    frequent = 45;
   };
 
-  # Turn off mutable users so `nixos-install` does not prompt to set a password
   users.mutableUsers = true;
   users.users.root.initialHashedPassword = "%adminPassword%";
 
-  # Create my personal user
-  # The password should be changed later
   users.extraUsers."%adminUsername%" = {
-    description = "Overlord";
+    description = "RMI Overlord";
     isNormalUser = true;
     initialHashedPassword = "%adminPassword%";
     extraGroups = [
@@ -50,7 +47,6 @@ in {
     uid = 1001;
   };
 
-  # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
   virtualisation.virtualbox.guest.enable = true;
@@ -67,6 +63,8 @@ in {
   documentation.dev.enable = true;
   documentation.nixos.enable = false;
 
+  programs.gnome-terminal.enable = true;
+
   nixpkgs.config.allowUnfree = true; # for firefox-bin
   environment.systemPackages = with pkgs; [
     firefox-bin
@@ -82,14 +80,12 @@ in {
     python3
     ruby
 
-    gcc9
+    gcc7
     gdb
     ddd
     valgrind
     gnumake
     stdman
-
-    anydesk
 
     gnome3.file-roller
     xfce.thunar-archive-plugin
@@ -97,7 +93,10 @@ in {
     tmux
     htop
     evince
-    gnome3.gnome-terminal
     konsole
+
+    anydesk
   ];
+
+  system.stateVersion = "20.09";
 }
